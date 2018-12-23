@@ -29,6 +29,7 @@ public class QueueIntFlip {
         this.flipped  = false;
     }
 
+    //可读的数量
     public int available() {
         if(!flipped){
             return writePos - readPos;
@@ -36,6 +37,7 @@ public class QueueIntFlip {
         return capacity - readPos + writePos;
     }
 
+    //可写的数量
     public int remainingCapacity() {
         if(!flipped){
             return capacity - writePos;
@@ -74,7 +76,7 @@ public class QueueIntFlip {
         if(!flipped){
             //readPos lower than writePos - free sections are:
             //1) from writePos to capacity
-            //2) from 0 to readPos
+            //2) from 0 to readPos     这个if中应该不会往这部分写，但确实是free section
 
             if(length <= capacity - writePos){
                 //new elements fit into top of elements array - copy directly

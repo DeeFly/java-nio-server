@@ -16,6 +16,14 @@ public class HttpUtil {
     private static final byte[] HOST           = new byte[]{'H','o','s','t'};
     private static final byte[] CONTENT_LENGTH = new byte[]{'C','o','n','t','e','n','t','-','L','e','n','g','t','h'};
 
+    /**
+     * 解析http协议中的header中的content-length属性，得到内容的长度，判断是否已经收到了全部的内容，如果是的话，返回body的结束位置，否则返回-1
+     * @param src
+     * @param startIndex
+     * @param endIndex
+     * @param httpHeaders
+     * @return
+     */
     public static int parseHttpRequest(byte[] src, int startIndex, int endIndex, HttpHeaders httpHeaders){
 
 
@@ -67,6 +75,7 @@ public class HttpUtil {
        return -1;
     }
 
+    //解析httpHeaders中的content-length的值，放到httpsHeaders中
     private static void findContentLength(byte[] src, int startIndex, int endIndex, HttpHeaders httpHeaders) throws UnsupportedEncodingException {
         int indexOfColon = findNext(src, startIndex, endIndex, (byte) ':');
 
@@ -105,6 +114,7 @@ public class HttpUtil {
     }
 
 
+    //从src中查找，从startIndex位置往后第一个value的位置。
     public static int findNext(byte[] src, int startIndex, int endIndex, byte value){
         for(int index = startIndex; index < endIndex; index++){
             if(src[index] == value) return index;
@@ -114,6 +124,7 @@ public class HttpUtil {
 
     public static int findNextLineBreak(byte[] src, int startIndex, int endIndex) {
         for(int index = startIndex; index < endIndex; index++){
+            //TODO 如果startIndex = 0 且为\n,会不会有数组越界异常，会不会有这种情况？
             if(src[index] == '\n'){
                 if(src[index - 1] == '\r'){
                     return index;

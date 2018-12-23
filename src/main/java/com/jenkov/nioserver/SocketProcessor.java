@@ -12,6 +12,8 @@ import java.util.*;
  */
 public class SocketProcessor implements Runnable {
 
+    //serverSocketChannel获取到新的连接后，将socketChannel放到这里，处理请求的
+    //takeNewSockets方法获取socketChannel封装成Socket，并且注册到readSelector中。
     private Queue<Socket>  inboundSocketQueue   = null;
 
     private MessageBuffer  readMessageBuffer    = null; //todo   Not used now - but perhaps will be later - to check for space in the buffer before reading from sockets
@@ -33,7 +35,9 @@ public class SocketProcessor implements Runnable {
 
     private long              nextSocketId = 16 * 1024; //start incoming socket ids from 16K - reserve bottom ids for pre-defined sockets (servers).
 
+    //Register all sockets that *have* data and which are not yet registered.
     private Set<Socket> emptyToNonEmptySockets = new HashSet<>();
+    //sockets which have no more data to write
     private Set<Socket> nonEmptyToEmptySockets = new HashSet<>();
 
 
@@ -55,6 +59,7 @@ public class SocketProcessor implements Runnable {
     public void run() {
         while(true){
             try{
+                //循环执行这个方法
                 executeCycle();
             } catch(IOException e){
                 e.printStackTrace();
@@ -69,6 +74,7 @@ public class SocketProcessor implements Runnable {
     }
 
 
+    //循环中执行这个方法，看起来不是通过线程池的方式执行请求的，而是一个线程中循环处理各种请求。
     public void executeCycle() throws IOException {
         takeNewSockets();
         readFromSockets();
@@ -134,6 +140,7 @@ public class SocketProcessor implements Runnable {
             this.socketMap.remove(socket.socketId);
             key.attach(null);
             key.cancel();
+            //不用回写数据吗？这就关闭了？
             key.channel().close();
         }
     }

@@ -83,16 +83,20 @@ public class Message {
 
 
     /**
+     * 这个方法暂时没看懂，可以看一下调用方，会方便理解
      * In case the buffer backing the nextMessage contains more than one HTTP message, move all data after the first
      * message to a new Message object.
      *
      * @param message   The message containing the partial message (after the first message).
+     *
      * @param endIndex  The end index of the first message in the buffer of the message given as parameter.
+     *                  如何确定消息是一个完整消息的？
      */
     public void writePartialMessageToMessage(Message message, int endIndex){
         int startIndexOfPartialMessage = message.offset + endIndex;
         int lengthOfPartialMessage     = (message.offset + message.length) - endIndex;
 
+        //把前面的数据覆盖了？而且如果lengthOfPartialMessage < 之前Message的length呢？
         System.arraycopy(message.sharedArray, startIndexOfPartialMessage, this.sharedArray, this.offset, lengthOfPartialMessage);
     }
 
